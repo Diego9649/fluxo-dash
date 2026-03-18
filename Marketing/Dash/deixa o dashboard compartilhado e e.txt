@@ -1,0 +1,21 @@
+deixa o dashboard compartilhado e editável por todos da equipe
+
+digitar os dados dos influencer no dash automaticamente
+ google forms para capturar os dados
+
+indicativo se o influencer já tem cupom criado ou está pendente
+
+acompanhar os envios de kit para os influencers se foram enviados corretamente mês a mês 
+
+rastrear a atividade de postagens dos influencers, acompanhar se estão cumprindo a meta e sinalizar isso no dash
+
+ter métrica do ROI3 no dahs puxando dados da yamp por API dinamicamente e sinalizar no dash se o influencer está vendendo bem ou não
+
+ter um campo com alertas de pendencias de atividades que precisam de atenção na manutenção do dados do dash
+ envios de kit pendende, cobrar postagem dos influencers 
+
+mantar o sistema de agenda 
+
+ ter aviso de recorrência de não bater meta de ROI3 no mês anterior
+
+

@@ -1,0 +1,13 @@
+fazer API da meta para identificar menções de reels posts, etc de influencers parceiros e poder ter controle para poder cobrar
+
+api com a yamp para ver o quanto cada influencer esta vendendo 
+
+colocar meta de ROI3 no desh para cada influencer ( se etá dentro do esperado ou não {em cores: verde vermelho})
+
+top 5 influencers que estão performando melhor
+
+expectativa de venda de cada influencer e um geral
+
+gráfico geral das coisas e linha de planilha de cada influencer
+
+pop up vermelho de pendencias e avisos no canto inferios direiro como era o chatling
