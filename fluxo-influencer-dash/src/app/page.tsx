@@ -10,7 +10,7 @@ export default function Dashboard() {
   // Função para buscar os dados da API Node.js
   const fetchData = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/dashboard/ranking');
+      const res = await fetch('https://fluxo-api-laganexa.onrender.com/');
       const data = await res.json();
       setRanking(data);
     } catch (err) {
