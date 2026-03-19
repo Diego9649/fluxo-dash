@@ -15,45 +15,62 @@ const supabase = createClient(
 /* =========================
    WEBHOOK YAMPI
 ========================= */
+
 app.post('/webhook-yampi', async (req, res) => {
-  const data = req.body.resource || req.body;
-  const cupom = data.promocode?.data?.code || data.checkout?.promotional_code;
-
-  if (!cupom) return res.status(200).send('Sem cupom');
-
   try {
-    const { data: inf } = await supabase
-      .from('influencers')
-      .select('cost')
-      .eq('coupon', cupom)
-      .maybeSingle();
+    const data = req.body.resource || req.body;
 
-    const valor = Number(data.value_total) || 0;
+    const orderId = String(data.id || data.order_number);
+    const cupom =
+      data.promocode?.data?.code ||
+      data.checkout?.promotional_code ||
+      null;
 
-    const roi =
-      inf?.cost > 0
-        ? (valor / inf.cost) >= 3
-          ? 'verde'
-          : 'vermelho'
-        : 'pendente';
+    const value = Number(data.value_total || data.total || 0);
+    const status = data.status?.data?.alias || data.status || 'pago';
 
+    // 🔹 SALVA VENDA
     await supabase.from('sales').upsert(
       [
         {
-          order_id: String(data.id || data.order_number),
+          order_id: orderId,
           coupon: cupom,
-          value: valor,
-          status: data.status?.data?.alias || 'pago',
-          roi_status: roi,
+          value,
+          status,
           created_at: new Date().toISOString(),
         },
       ],
       { onConflict: 'order_id' }
     );
 
+    // 🔹 BUSCA INFLUENCER
+    if (cupom) {
+      const { data: inf } = await supabase
+        .from('influencers')
+        .select('handle, cost')
+        .eq('cupom', cupom)
+        .maybeSingle();
+
+      if (inf) {
+        const roi =
+          inf.cost > 0
+            ? value / inf.cost >= 3
+              ? 'verde'
+              : 'vermelho'
+            : 'pendente';
+
+        // 🔹 ATUALIZA ROI NA VENDA
+        await supabase
+          .from('sales')
+          .update({ roi_status: roi, handle: inf.handle })
+          .eq('order_id', orderId);
+      }
+    }
+
     res.status(200).send('OK');
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error(err);
+    res.status(500).send('Erro webhook');
   }
 });
 
