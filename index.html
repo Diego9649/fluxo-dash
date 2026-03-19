@@ -2223,8 +2223,42 @@ function makeEditable(){
 
 window.addEventListener("DOMContentLoaded", ()=>{
   setTimeout(makeEditable, 500)
-})
 
+  loadRealSalesData()
+})
+async function loadRealSalesData() {
+    try {
+        const [resInf, resSales] = await Promise.all([
+            fetch('/api/influencers'),
+            fetch('/api/dashboard/recent-sales')
+        ]);
+
+        const influencers = await resInf.json();
+        const sales = await resSales.json();
+
+        document.getElementById('real-ranking-list').innerHTML = influencers.map(i => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px">
+                <div style="color:var(--laranja); font-weight:bold">@${i.handle}</div>
+                <div style="font-size:12px">${i.nome}</div>
+            </div>
+        `).join('') || "Sem dados.";
+
+        document.getElementById('real-sales-tbody').innerHTML = sales.map(s => `
+            <tr>
+                <td>#${s.order_id}</td>
+                <td>@${s.coupon}</td>
+                <td>R$ ${Number(s.value).toFixed(2)}</td>
+                <td><span class="tag-pago">${s.status}</span></td>
+                <td class="${s.roi_status === 'verde' ? 'roi-verde' : 'roi-vermelho'}">
+                    ${s.roi_status}
+                </td>
+            </tr>
+        `).join('') || "Sem vendas ainda.";
+
+    } catch (err) {
+        console.error("Erro API:", err);
+    }
+}
 </script>
 </body>
 </html>
