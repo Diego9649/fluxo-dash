@@ -4,121 +4,56 @@ const { createClient } = require('@supabase/supabase-js');
 const cors = require('cors');
 
 const app = express();
-
-// 1. CONFIGURAÇÕES INICIAIS
 app.use(cors());
 app.use(express.json());
 
-// 2. CONEXÃO COM O SUPABASE
-const supabase = createClient(
-    process.env.SUPABASE_URL, 
-    process.env.SUPABASE_KEY
-);
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// 3. ROTA DO WEBHOOK DA YAMPI (CORRIGIDA PARA UPSERT E ROI DINÂMICO)
+// Webhook Yampi -> Supabase
 app.post('/webhook-yampi', async (req, res) => {
-    const resource = req.body.resource || req.body.data || req.body;
+    const data = req.body.resource || req.body;
+    const cupom = data.promocode?.data?.code || data.checkout?.promotional_code;
     
-    const cupom = resource.promocode?.data?.code || 
-                  resource.checkout?.promocode?.data?.code || 
-                  resource.checkout?.promotional_code;
-
-    const valorVenda = Number(resource.value_total) || 0;
-    const statusPedido = resource.status?.data?.alias || 'pago';
-    const orderId = String(resource.id || resource.order_number);
-
-    if (!cupom) return res.status(200).send('OK (Sem cupom)');
+    if (!cupom) return res.status(200).send('Sem cupom');
 
     try {
-        // Busca custo para ROI
-        const { data: influencer } = await supabase
-            .from('influencers')
-            .select('cost')
-            .eq('coupon', cupom)
-            .maybeSingle();
+        const { data: inf } = await supabase.from('influencers').select('cost').eq('coupon', cupom).maybeSingle();
+        const valor = Number(data.value_total) || 0;
+        const roi = inf?.cost > 0 ? ((valor / inf.cost) >= 3 ? 'verde' : 'vermelho') : 'pendente';
 
-        let roiStatus = 'pendente'; 
-        if (influencer && influencer.cost > 0) {
-            roiStatus = (valorVenda / influencer.cost) >= 3 ? 'verde' : 'vermelho';
-        }
-
-        // UPSERT para evitar duplicados caso a Yampi envie o mesmo pedido 2x
-        const { error: upsertError } = await supabase.from('sales').upsert([{
-            order_id: orderId,
+        await supabase.from('sales').upsert([{
+            order_id: String(data.id || data.order_number),
             coupon: cupom,
-            value: valorVenda,
-            status: statusPedido,
-            roi_status: roiStatus,
+            value: valor,
+            status: data.status?.data?.alias || 'pago',
+            roi_status: roi,
             created_at: new Date().toISOString()
         }], { onConflict: 'order_id' });
 
-        if (upsertError) throw upsertError;
-        res.status(200).send('Webhook Processado');
-    } catch (err) { 
-        res.status(500).json({ error: err.message });
-    }
+        res.status(200).send('OK');
+    } catch (err) { res.status(500).send(err.message); }
 });
 
-// 4. ROTAS DO DASHBOARD
+// Busca Ranking para o Dash
 app.get('/api/dashboard/ranking', async (req, res) => {
-    try {
-        const { data: sales, error } = await supabase.from('sales').select('coupon, value, roi_status');
-        if (error) throw error;
-
-        const stats = (sales || []).reduce((acc, sale) => {
-            if (!acc[sale.coupon]) {
-                acc[sale.coupon] = { total: 0, sales_count: 0, status: sale.roi_status };
-            }
-            acc[sale.coupon].total += Number(sale.value);
-            acc[sale.coupon].sales_count += 1;
-            acc[sale.coupon].status = sale.roi_status; 
-            return acc;
-        }, {});
-
-        const ranking = Object.entries(stats)
-            .map(([coupon, data]) => ({ coupon, ...data }))
-            .sort((a, b) => b.total - a.total);
-
-        res.status(200).json(ranking);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    const { data } = await supabase.from('sales').select('coupon, value, roi_status');
+    const stats = (data || []).reduce((acc, s) => {
+        acc[s.coupon] = acc[s.coupon] || { total: 0, sales_count: 0, status: s.roi_status };
+        acc[s.coupon].total += s.value;
+        acc[s.coupon].sales_count++;
+        return acc;
+    }, {});
+    res.json(Object.entries(stats).map(([coupon, d]) => ({ coupon, ...d })));
 });
 
-app.get('/api/dashboard/recent-sales', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('sales')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(15);
-        if (error) throw error;
-        res.status(200).json(data);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 5. NOVA ROTA: ATUALIZAÇÃO DIRETA PELO DASHBOARD (EDITÁVEL)
-app.post('/api/update-data', async (req, res) => {
+// Update do Dashboard -> Supabase (Torna o Dash editável)
+app.post('/api/update-influencer', async (req, res) => {
     const { handle, field, value } = req.body;
     try {
-        const { error } = await supabase
-            .from('influencers')
-            .update({ [field]: value })
-            .eq('handle', handle);
-        
+        const { error } = await supabase.from('influencers').update({ [field]: value }).eq('handle', handle);
         if (error) throw error;
-        res.status(200).json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 6. EXPORTAÇÃO PARA VERCEL
 module.exports = app;
-
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => console.log(`🚀 API Local ligada: http://localhost:${PORT}`));
-}
