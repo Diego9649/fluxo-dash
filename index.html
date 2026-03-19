@@ -2178,44 +2178,51 @@ function renderKitsMesBars() {
 }
 
 
-
 // ============================
-// AUTO INJECTED - SAVE + SYNC
+// EDITABLE AUTO MODE
 // ============================
-async function saveData(handle, field, el){
-  const value = el.innerText.trim()
-  localStorage.setItem(`inf_${handle}_${field}`, value)
+function getHandleFromRow(tr){
+  const txt = tr.innerText
+  const match = txt.match(/@([a-zA-Z0-9_.]+)/)
+  return match ? match[1] : null
+}
 
-  try{
-    await fetch('/api/update-data',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({handle,field,value})
+function makeEditable(){
+  document.querySelectorAll("table").forEach(table=>{
+    const headers = Array.from(table.querySelectorAll("thead th")).map(th=>th.innerText.trim().toLowerCase())
+
+    table.querySelectorAll("tbody tr").forEach(tr=>{
+      const tds = tr.querySelectorAll("td")
+
+      tds.forEach((td,idx)=>{
+        td.setAttribute("contenteditable","true")
+
+        td.addEventListener("blur", async ()=>{
+          const handle = getHandleFromRow(tr)
+          if(!handle) return
+
+          const field = headers[idx] || ("col_"+idx)
+          const value = td.innerText.trim()
+
+          localStorage.setItem(`inf_${handle}_${field}`, value)
+
+          try{
+            await fetch('/api/update-data',{
+              method:'POST',
+              headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({handle,field,value})
+            })
+          }catch(e){
+            console.error(e)
+          }
+        })
+      })
     })
-  }catch(e){
-    console.error("Erro ao salvar:", e)
-  }
+  })
 }
 
-async function syncInfluencers(){
-  try{
-    const res = await fetch('/api/dashboard/ranking')
-    const data = await res.json()
-
-    if(data && data.length && typeof INF !== "undefined"){
-      INF.length = 0
-      data.forEach(i => INF.push(i))
-    }
-
-    if(typeof buildInfluenciadores === "function") buildInfluenciadores()
-
-  }catch(e){
-    console.error("Erro sync:", e)
-  }
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  if(typeof syncInfluencers === "function") syncInfluencers()
+window.addEventListener("DOMContentLoaded", ()=>{
+  setTimeout(makeEditable, 500)
 })
 
 </script>
