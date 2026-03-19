@@ -1024,17 +1024,6 @@ const CL=[
 // ═══════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════
-async function loadRealData() {
-    try {
-        // O caminho DEVE ser exatamente este para bater com o vercel.json
-        const response = await fetch('/api/dashboard/ranking');
-        const data = await response.json();
-        console.log("Dados do Supabase:", data);
-        // Sua lógica de renderização aqui...
-    } catch (err) {
-        console.error("Erro ao conectar na API:", err);
-    }
-}
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('nav-total').textContent = '● ' + INF.length + ' influenciadores';
   buildDashboard();
@@ -2187,43 +2176,48 @@ function renderKitsMesBars() {
     </div>
   `).join('');
 }
-// --- INTEGRAÇÃO REAL-TIME SUPABASE ---
 
-async function loadRealData() {
-    try {
-        const response = await fetch('/api/dashboard/ranking');
-        const data = await response.json();
-        
-        // 1. Atualiza o Ranking Visual (Top Influencers)
-        const rankingContainer = document.getElementById('ranking-list'); // Certifique-se que esse ID existe
-        if (rankingContainer) {
-            rankingContainer.innerHTML = data.map(item => `
-                <div class="flex justify-between items-center bg-gray-800 p-3 rounded mb-2 border border-gray-700">
-                    <span class="font-bold text-yellow-500">${item.coupon}</span>
-                    <span class="text-green-400 font-mono">R$ ${item.value.toFixed(2)}</span>
-                </div>
-            `).join('');
-        }
 
-        // 2. Atualiza a Badge de Total de Vendas no Nav
-        const navTotal = document.getElementById('nav-total');
-        if (navTotal && data.length > 0) {
-            navTotal.textContent = `● ${data.length} vendas registradas`;
-        }
 
-    } catch (err) {
-        console.error("Erro ao carregar dados reais:", err);
-    }
+// ============================
+// AUTO INJECTED - SAVE + SYNC
+// ============================
+async function saveData(handle, field, el){
+  const value = el.innerText.trim()
+  localStorage.setItem(`inf_${handle}_${field}`, value)
+
+  try{
+    await fetch('/api/update-data',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({handle,field,value})
+    })
+  }catch(e){
+    console.error("Erro ao salvar:", e)
+  }
 }
 
-// Inicialização Única
-const originalOnload = window.onload;
-window.onload = () => {
-    if (originalOnload) originalOnload();
-    loadRealData();
-    // Atualiza os dados automaticamente a cada 2 minutos
-    setInterval(loadRealData, 120000);
-};
+async function syncInfluencers(){
+  try{
+    const res = await fetch('/api/dashboard/ranking')
+    const data = await res.json()
+
+    if(data && data.length && typeof INF !== "undefined"){
+      INF.length = 0
+      data.forEach(i => INF.push(i))
+    }
+
+    if(typeof buildInfluenciadores === "function") buildInfluenciadores()
+
+  }catch(e){
+    console.error("Erro sync:", e)
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if(typeof syncInfluencers === "function") syncInfluencers()
+})
+
 </script>
 </body>
 </html>
