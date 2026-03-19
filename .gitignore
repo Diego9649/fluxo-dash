@@ -1,0 +1,17 @@
+# Dependências
+node_modules/
+package-lock.json
+
+# Variáveis de Ambiente (Segurança)
+.env
+
+# Logs e Cache
+npm-debug.log*
+.vercel
+.next/
+dist/
+build/
+
+# Arquivos do Sistema
+.DS_Store
+Thumbs.db
