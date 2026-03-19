@@ -2187,7 +2187,43 @@ function renderKitsMesBars() {
     </div>
   `).join('');
 }
+// --- INTEGRAÇÃO REAL-TIME SUPABASE ---
 
+async function loadRealData() {
+    try {
+        const response = await fetch('/api/dashboard/ranking');
+        const data = await response.json();
+        
+        // 1. Atualiza o Ranking Visual (Top Influencers)
+        const rankingContainer = document.getElementById('ranking-list'); // Certifique-se que esse ID existe
+        if (rankingContainer) {
+            rankingContainer.innerHTML = data.map(item => `
+                <div class="flex justify-between items-center bg-gray-800 p-3 rounded mb-2 border border-gray-700">
+                    <span class="font-bold text-yellow-500">${item.coupon}</span>
+                    <span class="text-green-400 font-mono">R$ ${item.value.toFixed(2)}</span>
+                </div>
+            `).join('');
+        }
+
+        // 2. Atualiza a Badge de Total de Vendas no Nav
+        const navTotal = document.getElementById('nav-total');
+        if (navTotal && data.length > 0) {
+            navTotal.textContent = `● ${data.length} vendas registradas`;
+        }
+
+    } catch (err) {
+        console.error("Erro ao carregar dados reais:", err);
+    }
+}
+
+// Inicialização Única
+const originalOnload = window.onload;
+window.onload = () => {
+    if (originalOnload) originalOnload();
+    loadRealData();
+    // Atualiza os dados automaticamente a cada 2 minutos
+    setInterval(loadRealData, 120000);
+};
 </script>
 </body>
 </html>
