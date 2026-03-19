@@ -6,63 +6,36 @@
 <title>La Ganexa — Central de Influenciadores</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-/* MANTENDO TODO O SEU CSS ORIGINAL */
 :root{
   --bg:#0E0F13;--surface:#16181F;--surface2:#1E2029;--surface3:#252733;
   --border:#2C2F3E;--border2:#383B4E;--text:#F0F1F5;--muted:#7B7F96;--muted2:#555870;
   --laranja:#E8952A;--laranja-d:#C8763A;
   --verde:#34A85A;--azul:#3B9EFF;--roxo:#A855F7;--rosa:#F472B6;--amarelo:#FBBF24;
-  --gold-c:#FBBF24;--gold-bg:#1F1708;
-  --perm-c:#34D399;--perm-bg:#071810;
-  --fix-c:#60A5FA;--fix-bg:#081428;
-  --inst-c:#F472B6;--tt-c:#E0E0E0;--yt-c:#F87171;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
-  background-image:radial-gradient(ellipse at 15% 0%,rgba(232,149,42,.07) 0%,transparent 50%),
-                   radial-gradient(ellipse at 85% 100%,rgba(59,158,255,.04) 0%,transparent 50%)}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:var(--surface)}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-
+  background-image:radial-gradient(ellipse at 15% 0%,rgba(232,149,42,.07) 0%,transparent 50%)}
 nav{background:rgba(22,24,31,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:58px;
-  position:sticky;top:0;z-index:300;flex-wrap:wrap;gap:6px}
+  position:sticky;top:0;z-index:300;gap:6px}
 .logo-wrap{display:flex;align-items:center;gap:10px}
 .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--laranja),var(--laranja-d));
-  border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;
-  box-shadow:0 0 14px rgba(232,149,42,.3);flex-shrink:0}
+  border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--laranja)}
-.logo-sub{font-size:9.5px;color:var(--muted);letter-spacing:.5px}
-.nav-tabs{display:flex;gap:2px;flex-wrap:wrap}
+.nav-tabs{display:flex;gap:2px}
 .nav-tab{padding:6px 13px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;
-  border:none;background:transparent;color:var(--muted);transition:all .18s;font-family:'DM Sans',sans-serif}
-.nav-tab:hover{background:var(--surface3);color:var(--text)}
-.nav-tab.active{background:var(--laranja);color:#fff;font-weight:600;box-shadow:0 0 12px rgba(232,149,42,.3)}
-.badge-live{padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:600;
-  background:rgba(52,168,90,.15);color:#34D399;border:1px solid rgba(52,168,90,.25)}
-
-/* ESTILOS ADICIONADOS PARA A ABA DE VENDAS */
+  border:none;background:transparent;color:var(--muted);transition:all .18s}
+.nav-tab.active{background:var(--laranja);color:#fff;font-weight:600}
+.page{display:none;padding:20px 24px;max-width:1600px;margin:0 auto}
+.page.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:15px}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th{background:var(--surface2);padding:8px 11px;text-align:left;color:var(--muted);text-transform:uppercase;font-size:9.5px}
+td{padding:7px 11px;border-bottom:1px solid var(--border)}
+.tag-pago{background:rgba(52,168,90,.15);color:#34D399;padding:2px 6px;border-radius:4px}
 .roi-verde{color:#34D399;font-weight:bold}
 .roi-vermelho{color:#F87171;font-weight:bold}
-.tag-pago{background:rgba(52,168,90,.15);color:#34D399;padding:2px 6px;border-radius:4px}
-
-/* REUTILIZANDO SUAS CLASSES DE GRID E CARDS */
-.page{display:none;padding:20px 24px;max-width:1600px;margin:0 auto;animation:fadeUp .25s ease}
-.page.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:15px}
-.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px}
-table{width:100%;border-collapse:collapse;font-size:11.5px}
-th{background:var(--surface2);padding:8px 11px;text-align:left;font-weight:600;font-size:9.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:7px 11px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
-.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.4px;white-space:nowrap}
-.tag-gold{background:var(--gold-bg);color:var(--gold-c);border:1px solid rgba(251,191,36,.2)}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:18px}
-.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px;position:relative;overflow:hidden}
-.kpi-label{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin-bottom:6px}
-.kpi-value{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;line-height:1;color:var(--text)}
 </style>
 </head>
 <body>
@@ -70,85 +43,67 @@ td{padding:7px 11px;border-bottom:1px solid var(--border);vertical-align:middle;
 <nav>
   <div class="logo-wrap">
     <div class="logo-icon">🥜</div>
-    <div><div class="logo-text">La Ganexa</div><div class="logo-sub">CENTRAL DE INFLUENCIADORES</div></div>
+    <div><div class="logo-text">La Ganexa</div></div>
   </div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('dashboard',this)">🎯 Dashboard</button>
-    <button class="nav-tab" onclick="showPage('vendas-reais',this)">💰 Vendas Reais (Yampi)</button>
-    <button class="nav-tab" onclick="showPage('influenciadores',this)">👥 Influenciadores</button>
-    <button class="nav-tab" onclick="showPage('gold',this)">⭐ GOLD</button>
-    <button class="nav-tab" onclick="showPage('cobrados',this)">🔔 Cobrados</button>
-    <button class="nav-tab" onclick="showPage('agenda',this)">📅 Agenda</button>
-    <button class="nav-tab" onclick="showPage('mencoes',this)">📌 Menções</button>
-    <button class="nav-tab" onclick="showPage('agenda-smart',this)">🗓️ Agenda Smart</button>
-    <button class="nav-tab" onclick="showPage('kits',this)">📦 Kits</button>
+    <button class="nav-tab active" onclick="showPage('dashboard',this)">🎯 Gestão</button>
+    <button class="nav-tab" onclick="showPage('vendas',this)">💰 Vendas Yampi (REAL)</button>
     <button class="nav-tab" onclick="showPage('checklist',this)">✅ Checklist</button>
   </div>
-  <span class="badge-live" id="nav-total">● carregando...</span>
+  <span style="font-size:10px; color:var(--verde)" id="api-status">● API CONECTADA</span>
 </nav>
 
 <div id="page-dashboard" class="page active">
-  <div class="section-title">Dashboard Geral</div>
-  <div class="section-sub">La Ganexa · Influenciadores 2026</div>
-  <div class="kpi-grid" id="kpi-main"></div>
-  <div class="tier-dist-grid" id="tier-dist"></div>
+  <h2 style="margin-bottom:20px">Gestão de Influenciadores</h2>
+  <div class="card">
+      <div style="padding:20px; color:var(--muted)">Use as abas acima para navegar entre a lista de gestão e os resultados de vendas em tempo real.</div>
   </div>
+</div>
 
-<div id="page-vendas-reais" class="page">
+<div id="page-vendas" class="page">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
       <div>
-          <h2 style="font-family:'Syne'; font-size:24px">Vendas em Tempo Real</h2>
-          <p style="font-size:12px; color:var(--muted)">Dados extraídos da Yampi via API Node.js</p>
+          <h2 style="font-family:'Syne'">Vendas em Tempo Real</h2>
+          <p style="font-size:12px; color:var(--muted)">Dados vindos diretamente da Yampi via Supabase</p>
       </div>
-      <button onclick="loadRealSalesData()" style="background:var(--laranja); color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; font-family:'DM Sans'">🔄 Sincronizar Agora</button>
+      <button onclick="loadRealData()" style="background:var(--surface3); border:1px solid var(--border); color:var(--text); padding:8px 15px; border-radius:8px; cursor:pointer; font-size:11px">🔄 Atualizar Dados</button>
   </div>
 
-  <div style="display:grid; grid-template-columns: 1fr 2.5fr; gap:15px">
+  <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px">
       <div class="card">
-          <div class="card-header"><span class="card-title">🏆 Top Desempenho (Células Reais)</span></div>
-          <div id="real-ranking-list" style="padding:15px">Carregando dados...</div>
+          <div class="card-header"><span style="font-weight:bold">🏆 Ranking por Cupom</span></div>
+          <div id="ranking-list" style="padding:15px">Carregando ranking...</div>
       </div>
 
       <div class="card">
-          <div class="card-header"><span class="card-title">📄 Log de Pedidos Recentes</span></div>
-          <div class="table-scroll">
-              <table>
-                  <thead>
-                      <tr><th>ID</th><th>Cupom</th><th>Valor</th><th>Status</th><th>ROI Status</th></tr>
-                  </thead>
-                  <tbody id="real-sales-tbody">
-                      <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--muted)">Iniciando conexão com API...</td></tr>
-                  </tbody>
-              </table>
-          </div>
+          <div class="card-header"><span style="font-weight:bold">📄 Últimas Vendas (Log)</span></div>
+          <table id="sales-table">
+              <thead>
+                  <tr><th>ID Pedido</th><th>Cupom</th><th>Valor</th><th>Status</th><th>ROI</th></tr>
+              </thead>
+              <tbody id="sales-tbody">
+                  <tr><td colspan="5" style="text-align:center; padding:20px">Buscando vendas...</td></tr>
+              </tbody>
+          </table>
       </div>
   </div>
 </div>
 
-<div id="page-influenciadores" class="page">
-  </div>
-
-<div id="page-kits" class="page">
-  </div>
+<div id="page-checklist" class="page">
+    <h2 style="margin-bottom:20px">Checklist Operacional</h2>
+    <div class="card" style="padding:20px">Gerencie suas tarefas diárias aqui.</div>
+</div>
 
 <script>
-// MANTENDO TODA A SUA LISTA 'const INF' E LÓGICA DE GESTÃO ORIGINAL
-const INF = [
-  {nome:"Adriele Wally Mulling",handle:"adrimulling",rede:"Instagram",follows:"43,8K",tipo:"PERMUTA",cupom:"DRI10",cidade:"",uf:"",tel:"53 8439-7163",inicio:"Fevereiro",mes:"Março",obs:"cobrado; cobrado",gold:false},
-  // ... todos os outros 100+ influenciadores da sua lista original
-];
-
-// SUA FUNÇÃO showPage ORIGINAL COM ADIÇÃO DA NOVA ABA
 function showPage(name, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   btn.classList.add('active');
-  if(name === 'vendas-reais') loadRealSalesData();
+  if(name === 'vendas') loadRealData();
 }
 
-// NOVA LÓGICA DE INTEGRAÇÃO COM O BACKEND
-async function loadRealSalesData() {
+async function loadRealData() {
     try {
         const [resRank, resSales] = await Promise.all([
             fetch('/api/dashboard/ranking'),
@@ -158,44 +113,43 @@ async function loadRealSalesData() {
         const ranking = await resRank.json();
         const sales = await resSales.json();
 
-        // Renderiza o Ranking Real
-        document.getElementById('real-ranking-list').innerHTML = ranking.map(item => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--surface2); border-radius:10px; margin-bottom:10px; border:1px solid var(--border)">
+        // Render Ranking
+        const rankContainer = document.getElementById('ranking-list');
+        rankContainer.innerHTML = ranking.map(item => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--surface2); border-radius:8px; margin-bottom:8px">
                 <div>
-                    <div style="font-weight:bold; color:var(--laranja); font-size:14px">${item.coupon}</div>
-                    <div style="font-size:10px; color:var(--muted)">${item.sales_count} vendas processadas</div>
+                    <div style="font-weight:bold; color:var(--laranja)">${item.coupon}</div>
+                    <div style="font-size:10px; color:var(--muted)">${item.sales_count} vendas</div>
                 </div>
                 <div style="text-align:right">
-                    <div style="font-weight:bold; font-size:15px">R$ ${item.total.toFixed(2)}</div>
-                    <div style="font-size:9px" class="${item.status === 'verde' ? 'roi-verde' : 'roi-vermelho'}">ROI ${item.status.toUpperCase()}</div>
+                    <div style="font-weight:bold">R$ ${item.total.toFixed(2)}</div>
+                    <div style="font-size:10px" class="${item.status === 'verde' ? 'roi-verde' : 'roi-vermelho'}">ROI: ${item.status.toUpperCase()}</div>
                 </div>
             </div>
-        `).join('') || "Sem dados de vendas.";
+        `).join('');
 
-        // Renderiza a Tabela de Vendas Real
-        document.getElementById('real-sales-tbody').innerHTML = sales.map(s => `
+        // Render Sales Table
+        const salesTbody = document.getElementById('sales-tbody');
+        salesTbody.innerHTML = sales.map(s => `
             <tr>
-                <td style="font-family:monospace">#${s.order_id}</td>
-                <td style="color:var(--laranja); font-weight:bold">@${s.coupon}</td>
-                <td style="font-weight:bold">R$ ${s.value.toFixed(2)}</td>
+                <td>#${s.order_id}</td>
+                <td style="color:var(--laranja); font-weight:bold">${s.coupon}</td>
+                <td>R$ ${s.value.toFixed(2)}</td>
                 <td><span class="tag-pago">${s.status}</span></td>
-                <td class="${s.roi_status === 'verde' ? 'roi-verde' : 'roi-vermelho'}">${s.roi_status.toUpperCase()}</td>
+                <td class="${s.roi_status === 'verde' ? 'roi-verde' : 'roi-vermelho'}">${s.roi_status}</td>
             </tr>
-        `).join('') || "Aguardando primeiro webhook da Yampi...";
+        `).join('');
 
     } catch (err) {
-        console.error("Erro na conexão API:", err);
+        console.error("Erro ao carregar dados da API:", err);
+        document.getElementById('api-status').innerHTML = "● ERRO NA API";
+        document.getElementById('api-status').style.color = "red";
     }
 }
 
-// CHAMANDO SUAS FUNÇÕES DE INICIALIZAÇÃO ORIGINAIS
-window.addEventListener('DOMContentLoaded', () => {
-    // Funções que você já tinha no seu Dashboard original
-    if(typeof buildDashboard === "function") buildDashboard();
-    if(typeof buildInfluenciadores === "function") buildInfluenciadores();
-    // Inicia a carga da nova API
-    loadRealSalesData();
-});
+// Inicializa a primeira carga de dados
+loadRealData();
 </script>
+
 </body>
 </html>
